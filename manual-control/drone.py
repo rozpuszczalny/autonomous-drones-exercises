@@ -22,11 +22,6 @@ class Application(tk.Frame):
         self.mode_status.delete("1.0", tk.END)
         self.mode_status.insert(tk.END, self.get_mode_text())
 
-    def toggle_mode(self):
-        mode['current'] = MODE_1 if mode['current'] == MODE_2 else MODE_2
-        self.mode_status.delete("1.0", tk.END)
-        self.mode_status.insert(tk.END, self.get_mode_text())
-
     def toggle_flight_mode(self):
         flight_mode['requested'] = FLIGHT_MODE_POSITION if flight_mode['requested'] == FLIGHT_MODE_ALITIUDE else FLIGHT_MODE_ALITIUDE
         self.set_flight_mode_text()
