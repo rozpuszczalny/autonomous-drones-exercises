@@ -2,6 +2,7 @@ import asyncio
 import os
 import sys
 import signal
+import math
 from mavsdk import System, geofence
 
 status = {
@@ -10,6 +11,7 @@ status = {
     'battery': None,
     'altitude': None,
     'gps_info': None,
+    'velocity': None,
 }
 
 def signal_handler(sig, frame):
@@ -37,6 +39,14 @@ async def get_gps_info_status(drone: System):
     async for gps_info in drone.telemetry.gps_info():
         status['gps_info'] = gps_info
 
+async def get_velocity(drone: System):
+    async for velocity in drone.telemetry.velocity_ned():
+        status['velocity'] = math.sqrt(
+            velocity.north_m_s ** 2 + 
+            velocity.east_m_s ** 2 + 
+            velocity.down_m_s ** 2
+        )
+
 async def print_status():
     while True:
         os.system('clear')
@@ -60,6 +70,10 @@ async def print_status():
             print(f"number of satellites {status['gps_info'].num_satellites}")
         else:
             print(f"number of satellites ___")
+        if status['velocity']:
+            print(f"velocity {status['velocity']}")
+        else:
+            print(f"velocity ___")
 
         await asyncio.sleep(PRINT_INTERVAL)
 
@@ -81,6 +95,7 @@ async def manual_controls():
         get_position_status(drone),
         get_battery_status(drone),
         get_gps_info_status(drone),
+        get_velocity(drone),
         print_status()
     )
 
